@@ -1,11 +1,13 @@
 Package: PreSPickR
 Title: Downloading Species Presences (Occurrences) From Public Repositories
-Version: 0.1
+Version: 1.0.0
 Authors@R: person("Xavier", "Rotllan-Puig", email = "xavi.rotllan.puig@gmail.com", role = c("aut", "cre"))
 Description: Some functions for downloading species presences (occurrences) from several 
     public repositories (for now, GBIF and Bioatles).
     They clean the data sets and save them in a csv file.
 Depends: R (>= 3.3.3), dplyr, raster, rgbif, rgdal, rvest, sp
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

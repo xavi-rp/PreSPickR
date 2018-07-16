@@ -1,0 +1,37 @@
+---
+title: "Example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# PreSPickR: An Example
+
+This vignette is just an example of how to use the package.
+
+
+```r
+library("PreSPickR")
+```
+
+## Bioatles
+
+```r
+bioatles(sp_list = "species_bioatles.csv")
+```
+
+You can also pass the arguments `sp_dir` to specify the directory of the file and `out_name` for the the output name of the downloaded file.
+
+
+## GBIF
+
+```r
+GetBIF(credentials = "~/gbif_credentials.RData", sp_list = "species_gbif.csv", out_name = "sp_records_gbif")
+```
+
+Your GBIF credentials can be stored in a `.RData` or passed with the arguments `gbif_usr`, `gbif_pwrd` and `email`.
+
+
+
