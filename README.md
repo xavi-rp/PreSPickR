@@ -8,3 +8,9 @@ Equally, GetBIF() is used to download species occurrences from GBIF. It is based
 GetBIF() retrieve your GBIF credentials (user, password and email) and automatically makes checks using a loop until the request of the data set made to GBIF is ready. In that moment it starts the download. Finally, it saves the data in a csv file. The data is in Lat/Long Geographic Coordinates System WGS84.
 
 
+## References
+
+  - Scott Chamberlain (2017). rgbif: Interface to the Global 'Biodiversity' Information Facility 'API'. R package version 0.9.8. https://CRAN.R-project.org/package=rgbif
+  - Hadley Wickham (2016). rvest: Easily Harvest (Scrape) Web Pages. R package version 0.3.2. https://CRAN.R-project.org/package=rvest
+  - Hadley Wickham, James Hester and Jeroen Ooms (2017). xml2: Parse XML. R package version 1.1.1. https://CRAN.R-project.org/package=xml2
+
