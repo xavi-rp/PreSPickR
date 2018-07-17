@@ -23,7 +23,6 @@
 #'
 #'
 #'
-#' GetBIF()
 #
 # Created on: Winter 2018 (under construction)
 #

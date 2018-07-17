@@ -18,7 +18,6 @@
 #'
 #'
 #'
-#' bioatles()
 #
 # Created on: Winter-Spring 2018 (under construction)
 #
@@ -66,9 +65,7 @@ bioatles <- function(sp_dir = NULL, sp_list = NULL, out_name = "sp_records"){
 
   #### Downloading Species Name and BIOATLES code ####
   noms <- as.data.frame(page %>% html_nodes('option') %>% html_text())
-  chks <- which(grepl("^Selecciona", noms$`page %>%
-                        html_nodes("option") %>%
-                        html_text()`))
+  chks <- which(grepl("^Selecciona", noms$`page %>% html_nodes("option") %>% html_text()`))
   noms1 <- as.data.frame(noms[(chks[length(chks) - 1] + 1) : (chks[length(chks)] - 1), ])
 
   nds1 <- page %>% html_nodes('select#selectEspecie')
