@@ -22,11 +22,17 @@ This vignette is just an example of how to use the package.
 ```r
 library("PreSPickR")
 ```
+You can pass the list of species names to be downloaded in a `.csv` file (without header) or as a vector. Make sure that the spelling is correct!
+
 
 ## Bioatles
 
 ```r
 bioatles(sp_list = "species_bioatles.csv")
+```
+
+```r
+bioatles(sp_list = c("Chamaerops humilis", "Asphodelus aestivus"))
 ```
 
 You can also pass the arguments `sp_dir` to specify the directory of the file and `out_name` for the the output name of the downloaded file.
@@ -38,7 +44,7 @@ You can also pass the arguments `sp_dir` to specify the directory of the file an
 GetBIF(credentials = "~/gbif_credentials.RData", sp_list = "species_gbif.csv", out_name = "sp_records_gbif")
 ```
 
-Your GBIF credentials can be stored in a `.RData` or passed with the arguments `gbif_usr`, `gbif_pwrd` and `email`.
+Your GBIF credentials can be stored in a `.RData` or passed to the function using the arguments `gbif_usr`, `gbif_pwrd` and `email`.
 
 
 ## References
