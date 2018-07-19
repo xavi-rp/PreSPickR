@@ -1,6 +1,6 @@
 # PreSPickR
 
-The aim of this package is to download species presences (occurrences) data from public repositories. For now it is implemented for Bioatles, which has data from the Balearic Islands (http://bioatles.caib.es), and for GBIF.
+The aim of this package is to download species presences (occurrences) data from public repositories. For now it is implemented for [Bioatles](http://bioatles.caib.es), which has data from the Balearic Islands, and for [GBIF](https://www.gbif.org/).
 
 Bioatles data is projected in European Datum 1950 (31N). The function bioatles(), which downloads the occurrences, also transform the data set in Lat/Long Geographic Coordinates System WGS84. It is based on several functions included in the packages "rvest" (Wickham, 2016) and "xml2" (Wickham et al., 2017). Finally, it saves the data in a csv file.
 
@@ -8,6 +8,13 @@ Equally, GetBIF() is used to download species occurrences from GBIF. It is based
 GetBIF() retrieve your GBIF credentials (user, password and email) and automatically makes checks using a loop until the request of the data set made to GBIF is ready. In that moment it starts the download. Finally, it saves the data in a csv file. The data is in Lat/Long Geographic Coordinates System WGS84.
 
 See vignette for some examples.
+
+Download the source code [here](https://www.researchgate.net/publication/326440673_PreSPickR_Downloading_Species_Presences_Occurrences_From_Public_Repositories). Or install the latest version:
+
+```
+library(devtools)
+install_github("xavi-rp/PreSPickR")
+```
 
 
 ## References
