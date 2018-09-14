@@ -13,7 +13,7 @@
 #' @param sp_dir Directory of the species list
 #' @param sp_list A csv file name or a vector containing species to be downloaded
 #' @param out_name Name to the output data set (csv file)
-#' @return The sum of \code{sp_dir} and \code{sp_list} and \code{out_name}
+#' @return An csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 #' @name bioatles()
 #'
 #'

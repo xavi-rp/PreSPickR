@@ -9,7 +9,7 @@ GetBIF() retrieve your GBIF credentials (user, password and email) and automatic
 
 See vignette for some examples.
 
-Download the source code [here](https://www.researchgate.net/publication/326440673_PreSPickR_Downloading_Species_Presences_Occurrences_From_Public_Repositories). Or install the latest version:
+Download the source package  [here](https://www.researchgate.net/publication/326440673_PreSPickR_Downloading_Species_Presences_Occurrences_From_Public_Repositories). Or install the latest version:
 
 ```
 library(devtools)

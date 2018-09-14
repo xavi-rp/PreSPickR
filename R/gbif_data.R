@@ -18,7 +18,7 @@
 #' @param email email in GBIF
 #' @param credentials .RData file containing a list with gbif_usr, gbif_pwrd and email
 #' @param out_name Name to the output data set (csv file)
-#' @return The sum of \code{gbif_usr} and \code{gbif_pwrd} and \code{email} and \code{credentials} and \code{out_name}
+#' @return An csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 #' @name GetBIF()
 #'
 #'
