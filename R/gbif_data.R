@@ -9,22 +9,32 @@
 
 #' Downloading species ocurrence data (presences) from GBIF
 #'
-#' The aim of this script is to define the function GetBIF(), which is used to download species occurrences from GBIF (Global Biodiversity Information Facility ), and saves them as a csv data set. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
+#' The aim of this script is to define the function GetBIF(), which is used to download species occurrences from GBIF (Global Biodiversity Information Facility ), and generate a csv data set with the coordinates ready to use. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
 #'
 #' @author Xavier Rotllan-Puig
-#' @description Download species occurrences from GBIF (Global Biodiversity Information Facility ), and saves them as a csv data set. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
+#' @description Download species occurrences from GBIF (Global Biodiversity Information Facility ), and generates a csv data set with the coordinates ready to be used. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it extracts and saves the coordinates of the occurrences in a csv file.
 #' @param gbif_usr User name in GBIF
 #' @param gbif_pwrd Password in GBIF
 #' @param email email in GBIF
 #' @param credentials .RData file containing a list with gbif_usr, gbif_pwrd and email
+#' @param sp_dir directory where to find the species list to be downloaded (only if not the working directory)
+#' @param sp_list list of species to be downloaded (either a csv file or a vector with the names)
 #' @param out_name Name to the output data set (csv file)
-#' @return An csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
+#' @param ... Other parameters to be passed mostly to 'occ_download()'. Notice that not all parameters are supported in this version
+#' @return A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 #' @name GetBIF()
+#' @export
+#' @examples
+#' \donttest{
+#' GetBIF(credentials = "~/gbif_credentials.RData",
+#'        sp_list = "list_taxons.csv",
+#'        out_name = "sp_records")
+#'}
 #'
 #'
 #'
 #
-# Created on: Winter 2018 (under construction)
+# Created on: Winter 2018 (updated Summer 2021)
 #
 # Created by: Xavier Rotllan-Puig (xavi.rotllan.puig@gmail.com)
 #
@@ -51,7 +61,8 @@
 GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    credentials = NULL,
                    sp_dir = NULL, sp_list = NULL,
-                   out_name = "sp_records"
+                   out_name = "sp_records",
+                   ...
                    ){
 
   #### Settings ####
@@ -72,14 +83,29 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
     stop("Not supported format (must be .csv file or vector)")
   }
 
+  # Dots
+  dts <- list(...)
+  if(is.null(dts$hasCoordinate)) dts$hasCoordinate <- TRUE
+  if(is.null(dts$type)) dts$type <- "and"
+  if(is.null(dts$POLYGON)) dts$POLYGON <- "POLYGON((-179.99999 -60.00000,180.00000 -60.00000,180.00000 73.00000,-179.99999 73.00000,-179.99999 -60.00000))"
+  # for Europe (more or less)          "POLYGON((-12.69141 33.4901,42.71485 33.4901,42.71485 71.9218,-12.69141 71.9218,-12.69141 33.4901))"
+  if(is.null(dts$year)) dts$year <- c(1996, as.integer(format(Sys.Date(), "%Y")))
+  if(is.null(dts$elevation)) dts$elevation <- c(0, 3000)
+  if(is.null(dts$coordinateUncertaintyInMeters)) dts$coordinateUncertaintyInMeters <- c(0, 50)
+
+  
   #### Downloading Data ####
   ## Spin up a download request for SEVERAL species data
 
   for (sps in species){
     print(paste0("Downloading data for ", sps))
-    rqst_02 <- occ_download(paste0("taxonKey = ", name_backbone(name = sps)$speciesKey),
-                            "hasCoordinate = TRUE",
-                            type = "and",
+    rqst_02 <- occ_download(pred("taxonKey", name_backbone(name = sps)$usageKey),
+                            pred("hasCoordinate", dts$hasCoordinate),
+                            type = dts$type,
+                            pred_and(pred_gte("year", dts$year[1]), pred_lte("year", dts$year[2])),
+                            pred_within(dts$POLYGON),
+                            pred_and(pred_gte("elevation", dts$elevation[1]), pred_lte("elevation", dts$elevation[2])),
+                            pred_and(pred_gte("coordinateUncertaintyInMeters", dts$coordinateUncertaintyInMeters[1]), pred_lte("coordinateUncertaintyInMeters", dts$coordinateUncertaintyInMeters[2])),
                             user = gbif_usr, pwd = gbif_pwrd, email = email)    #prepares the spin up
     # Creates metadata
     rqst_02_meta <- data.frame(status = "INITIAL")
