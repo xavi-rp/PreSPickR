@@ -154,7 +154,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   }
 
   data1 <- as.data.frame(data1)  #data set with coordinates and name of species
-  if(rm_dupl = TRUE)  data1 <- data1[!duplicated(data1), ]
+  if(rm_dupl == TRUE)  data1 <- data1[!duplicated(data1), ]
 
   data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
                              substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
