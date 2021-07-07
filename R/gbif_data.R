@@ -17,8 +17,8 @@
 #' @param gbif_pwrd Password in GBIF
 #' @param email email in GBIF
 #' @param credentials .RData file containing a list with gbif_usr, gbif_pwrd and email
-#' @param sp_dir directory where to find the species list to be downloaded (only if not the working directory)
-#' @param sp_list list of species to be downloaded (either a csv file or a vector with the names)
+#' @param taxon_dir directory where to find the taxons list to be downloaded (only if not the working directory)
+#' @param taxon_list list of taxons to be downloaded (either a csv file or a vector with the names)
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
@@ -29,7 +29,7 @@
 #' @examples
 #' \donttest{
 #' GetBIF(credentials = "~/gbif_credentials.RData",
-#'        sp_list = "list_taxons.csv",
+#'        taxon_list = "list_taxons.csv",
 #'        out_name = "sp_records")
 #'}
 #'
@@ -41,7 +41,7 @@
 # Created by: Xavier Rotllan-Puig (xavi.rotllan.puig@gmail.com)
 #
 # Inputs:
-#       - The location of a csv file with the names of the species to be downloaded
+#       - The location of a csv file with the names of the taxons to be downloaded
 #         ATTENTION: Make sure that the spelling is exactly the same used by GBIF (e.g. "FAGUS SYLVATICA L.")
 #       - For security reasons, your GBIF credentials (user, password and email)
 #         can be loaded from a RData file (location needs to be given). Otherwise,
@@ -62,7 +62,7 @@
 
 GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    credentials = NULL,
-                   sp_dir = NULL, sp_list = NULL,
+                   taxon_dir = NULL, taxon_list = NULL,
                    rm_dupl = TRUE,
                    cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
                    out_name = "sp_records",
@@ -76,13 +76,13 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   # Calling GBIF credentials
   if (!is.null(credentials)) load(credentials, verbose = FALSE)
 
-  # List of species
-  if (any(grepl(".csv", sp_list))) {
-    if (is.null(sp_dir)) sp_dir <- wd
-    species <- read.csv(paste0(sp_dir, "/", sp_list), header = FALSE)
-    species <- as.vector(species$V1)  # species to be downdloaded
-  } else if (is.vector(sp_list)) {
-    species <- sp_list
+  # List of taxons
+  if (any(grepl(".csv", taxon_list))) {
+    if (is.null(taxon_dir)) taxon_dir <- wd
+    taxons <- read.csv(paste0(taxon_dir, "/", taxon_list), header = FALSE)
+    taxons <- as.vector(taxons$V1)  # taxons to be downdloaded
+  } else if (is.vector(taxon_list)) {
+    taxons <- taxon_list
   } else {
     stop("Not supported format (must be .csv file or vector)")
   }
@@ -99,9 +99,9 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
 
 
   #### Downloading Data ####
-  ## Spin up a download request for SEVERAL species data
+  ## Spin up a download request for SEVERAL taxons data
 
-  for (sps in species){
+  for (sps in taxons){
     print(paste0("Downloading data for ", sps))
     rqst_02 <- occ_download(pred("taxonKey", name_backbone(name = sps)$usageKey),
                             pred("hasCoordinate", dts$hasCoordinate),
@@ -141,7 +141,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   #### Retrieving Data ####
   data1 <- data.frame()
 
-  for (sps in species){
+  for (sps in taxons){
     cat(paste0("Reading data for ", sps), "\n")
     load(paste0("download_info_", sps, ".RData"), verbose = FALSE)
 
