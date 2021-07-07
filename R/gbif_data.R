@@ -19,6 +19,8 @@
 #' @param credentials .RData file containing a list with gbif_usr, gbif_pwrd and email
 #' @param sp_dir directory where to find the species list to be downloaded (only if not the working directory)
 #' @param sp_list list of species to be downloaded (either a csv file or a vector with the names)
+#' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
+#' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
 #' @param ... Other parameters to be passed mostly to 'occ_download()'. Notice that not all parameters are supported in this version
 #' @return A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
@@ -61,6 +63,8 @@
 GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    credentials = NULL,
                    sp_dir = NULL, sp_list = NULL,
+                   rm_dupl = TRUE,
+                   cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
                    out_name = "sp_records",
                    ...
                    ){
@@ -93,7 +97,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   if(is.null(dts$elevation)) dts$elevation <- c(0, 3000)
   if(is.null(dts$coordinateUncertaintyInMeters)) dts$coordinateUncertaintyInMeters <- c(0, 50)
 
-  
+
   #### Downloading Data ####
   ## Spin up a download request for SEVERAL species data
 
@@ -143,14 +147,15 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
 
     # Reading in data
     data02 <- occ_download_import(dta)
-    data02 <- data02[!duplicated(data02[, c(133:134)]), ]
-    data02 <- data02[, names(data02) %in%
-                       c("species", "decimalLatitude", "decimalLongitude")]
+    data02 <- data02[, names(data02) %in% cols2keep]
+                       #c("species", "decimalLatitude", "decimalLongitude")]
 
     data1 <- rbind(data1, data02)
   }
 
   data1 <- as.data.frame(data1)  #data set with coordinates and name of species
+  if(rm_dupl = TRUE)  data1 <- data1[!duplicated(data1), ]
+
   data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
                              substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
                              sep = "_"))
