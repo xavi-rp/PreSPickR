@@ -12,7 +12,9 @@
 #' The aim of this script is to define the function GetBIF(), which is used to download species occurrences from GBIF (Global Biodiversity Information Facility ), and generate a csv data set with the coordinates ready to use. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
 #'
 #' @author Xavier Rotllan-Puig
+#' @title PrepBIF
 #' @description Download species occurrences from GBIF (Global Biodiversity Information Facility ), and generates a csv data set with the coordinates ready to be used. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it extracts and saves the coordinates of the occurrences in a csv file.
+#' @import rgbif dplyr
 #' @param gbif_usr User name in GBIF
 #' @param gbif_pwrd Password in GBIF
 #' @param email email in GBIF
@@ -22,7 +24,7 @@
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
-#' @param ... Other parameters to be passed mostly to 'occ_download()'. Notice that not all parameters are supported in this version
+#' @param ... Other parameters to be passed mostly to 'occ_download()'. Not used
 #' @return A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 #' @name GetBIF()
 #' @export
@@ -45,11 +47,13 @@
 #         ATTENTION: Make sure that the spelling is exactly the same used by GBIF (e.g. "FAGUS SYLVATICA L.")
 #       - For security reasons, your GBIF credentials (user, password and email)
 #         can be loaded from a RData file (location needs to be given). Otherwise,
-#         they can be passed as arguments
+#         they can be passed as arguments.
 #
 #
 # Outputs:
-#       - A csv file with 3 columns (species, decimalLatitude, decimalLongitude)
+#       - A csv file with 3 columns by default (species name, decimalLatitude, decimalLongitude),
+#         Plus a 4th column with species reference name in the form of 3 first letters of genus, underscore,
+#         3 first lettes of species.
 #
 # References:
 #       - Scott Chamberlain (2017). rgbif: Interface to the Global 'Biodiversity'
@@ -63,6 +67,10 @@
 GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    credentials = NULL,
                    taxon_dir = NULL, taxon_list = NULL,
+                   download_format = "SIMPLE_CSV",
+                   download_years = c(2000, 2021),
+                   download_coords = c(NA, NA, NA, NA), #order: xmin, xmax, ymin, ymax
+                   download_coords_accuracy = c(0, 50),
                    rm_dupl = TRUE,
                    cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
                    out_name = "sp_records",
@@ -70,15 +78,13 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    ){
 
   #### Settings ####
-  # Working directory
-  wd <- getwd()
 
   # Calling GBIF credentials
   if (!is.null(credentials)) load(credentials, verbose = FALSE)
 
   # List of taxons
   if (any(grepl(".csv", taxon_list))) {
-    if (is.null(taxon_dir)) taxon_dir <- wd
+    if (is.null(taxon_dir)) taxon_dir <- getwd()
     taxons <- read.csv(paste0(taxon_dir, "/", taxon_list), header = FALSE)
     taxons <- as.vector(taxons$V1)  # taxons to be downdloaded
   } else if (is.vector(taxon_list)) {
@@ -88,15 +94,30 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   }
 
   # Dots
-  dts <- list(...)
-  if(is.null(dts$hasCoordinate)) dts$hasCoordinate <- TRUE
-  if(is.null(dts$type)) dts$type <- "and"
-  if(is.null(dts$POLYGON)) dts$POLYGON <- "POLYGON((-179.99999 -60.00000,180.00000 -60.00000,180.00000 73.00000,-179.99999 73.00000,-179.99999 -60.00000))"
-  # for Europe (more or less)          "POLYGON((-12.69141 33.4901,42.71485 33.4901,42.71485 71.9218,-12.69141 71.9218,-12.69141 33.4901))"
-  if(is.null(dts$year)) dts$year <- c(1996, as.integer(format(Sys.Date(), "%Y")))
-  if(is.null(dts$elevation)) dts$elevation <- c(0, 3000)
-  if(is.null(dts$coordinateUncertaintyInMeters)) dts$coordinateUncertaintyInMeters <- c(0, 50)
+  #dts <- list(...)
+  #if(is.null(dts$hasCoordinate)) dts$hasCoordinate <- TRUE
+  #if(is.null(dts$type)) dts$type <- "and"
+  #if(is.null(dts$POLYGON)) dts$POLYGON <- "POLYGON((-179.99999 -60.00000,180.00000 -60.00000,180.00000 73.00000,-179.99999 73.00000,-179.99999 -60.00000))"
+  ## for Europe (more or less)          "POLYGON((-12.69141 33.4901,42.71485 33.4901,42.71485 71.9218,-12.69141 71.9218,-12.69141 33.4901))"
+  #if(is.null(dts$year)) dts$year <- c(1996, as.integer(format(Sys.Date(), "%Y")))
+  #if(is.null(dts$elevation)) dts$elevation <- c(0, 3000)
+  #if(is.null(dts$coordinateUncertaintyInMeters)) dts$coordinateUncertaintyInMeters <- c(0, 50)
 
+  if (sum(is.na(download_coords)) == 4){
+    coords <- "POLYGON((-179.99999 -60.00000,180.00000 -60.00000,180.00000 73.00000,-179.99999 73.00000,-179.99999 -60.00000))"
+  }else if (sum(is.na(download_coords)) > 0 & sum(is.na(download_coords)) < 4){
+    stop("please provide correct coordinates")
+  }else if (all(download_coords >= -180 & download_coords <= 180)){
+    coords <- paste0("POLYGON((",
+                     download_coords[1], " ", download_coords[3], ",",
+                     download_coords[2], " ", download_coords[3], ",",
+                     download_coords[2], " ", download_coords[4], ",",
+                     download_coords[1], " ", download_coords[4], ",",
+                     download_coords[1], " ", download_coords[3],
+                     "))")
+  }else{
+    stop("please provide correct coordinates")
+  }
 
   #### Downloading Data ####
   ## Spin up a download request for SEVERAL taxons data
@@ -104,12 +125,13 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   for (sps in taxons){
     print(paste0("Downloading data for ", sps))
     rqst_02 <- occ_download(pred("taxonKey", name_backbone(name = sps)$usageKey),
-                            pred("hasCoordinate", dts$hasCoordinate),
-                            type = dts$type,
-                            pred_and(pred_gte("year", dts$year[1]), pred_lte("year", dts$year[2])),
-                            pred_within(dts$POLYGON),
-                            pred_and(pred_gte("elevation", dts$elevation[1]), pred_lte("elevation", dts$elevation[2])),
-                            pred_and(pred_gte("coordinateUncertaintyInMeters", dts$coordinateUncertaintyInMeters[1]), pred_lte("coordinateUncertaintyInMeters", dts$coordinateUncertaintyInMeters[2])),
+                            format = download_format,
+                            pred("hasCoordinate", TRUE),
+                            pred_and(pred_gte("year", download_years[1]), pred_lte("year", download_years[2])),
+                            pred_within(coords),
+                            #pred_and(pred_gte("elevation", dts$elevation[1]), pred_lte("elevation", dts$elevation[2])),
+                            pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2])),
+                            ...,
                             user = gbif_usr, pwd = gbif_pwrd, email = email)    #prepares the spin up
     # Creates metadata
     rqst_02_meta <- data.frame(status = "INITIAL")
@@ -139,26 +161,11 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
 
 
   #### Retrieving Data ####
-  data1 <- data.frame()
+  data1 <- Prep_BIF(taxon_dir = paste0(taxon_dir, "/"),
+                    taxons = taxons,
+                    cols2keep = cols2keep
+                    )
 
-  for (sps in taxons){
-    cat(paste0("Reading data for ", sps), "\n")
-    load(paste0("download_info_", sps, ".RData"), verbose = FALSE)
-
-    # Reading in data
-    data02 <- occ_download_import(dta)
-    data02 <- data02[, names(data02) %in% cols2keep]
-                       #c("species", "decimalLatitude", "decimalLongitude")]
-
-    data1 <- rbind(data1, data02)
-  }
-
-  data1 <- as.data.frame(data1)  #data set with coordinates and name of species
-  if(rm_dupl == TRUE)  data1 <- data1[!duplicated(data1), ]
-
-  data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
-                             substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
-                             sep = "_"))
 
   #### Saving data ####
   print(paste0("Saving GBIF data as ", wd, "/", out_name, ".csv"))
