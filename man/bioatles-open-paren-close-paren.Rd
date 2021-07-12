@@ -15,7 +15,7 @@ bioatles(sp_dir = NULL, sp_list = NULL, out_name = "sp_records")
 \item{out_name}{Name to the output data set (csv file)}
 }
 \value{
-The sum of \code{sp_dir} and \code{sp_list} and \code{out_name}
+An csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 }
 \description{
 Download species (presences) data from the Bioatles http://bioatles.caib.es. As data in Bioatles is projected in European Datum 1950 (31N), the function also trensform it in Lat/Long Geographic Coordinates System WGS84. bioatles() is based on several functions included in the packages "rvest" (Wickham, 2016) and "xml2" (Wickham et al., 2017). Finally, it saves the data in a csv file.

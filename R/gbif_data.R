@@ -163,7 +163,8 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   #### Retrieving Data ####
   data1 <- Prep_BIF(taxon_dir = paste0(taxon_dir, "/"),
                     taxons = taxons,
-                    cols2keep = cols2keep
+                    cols2keep = cols2keep,
+                    rm_dupl = rm_dupl
                     )
 
 

@@ -3,11 +3,24 @@
 \name{GetBIF()}
 \alias{GetBIF()}
 \alias{GetBIF}
-\title{Downloading species ocurrence data (presences) from GBIF}
+\title{PrepBIF}
 \usage{
-GetBIF(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
-  credentials = NULL, sp_dir = NULL, sp_list = NULL,
-  out_name = "sp_records")
+GetBIF(
+  gbif_usr = NULL,
+  gbif_pwrd = NULL,
+  email = NULL,
+  credentials = NULL,
+  taxon_dir = NULL,
+  taxon_list = NULL,
+  download_format = "SIMPLE_CSV",
+  download_years = c(2000, 2021),
+  download_coords = c(NA, NA, NA, NA),
+  download_coords_accuracy = c(0, 50),
+  rm_dupl = TRUE,
+  cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
+  out_name = "sp_records",
+  ...
+)
 }
 \arguments{
 \item{gbif_usr}{User name in GBIF}
@@ -18,16 +31,38 @@ GetBIF(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
 
 \item{credentials}{.RData file containing a list with gbif_usr, gbif_pwrd and email}
 
+\item{taxon_dir}{directory where to find the taxons list to be downloaded (only if not the working directory)}
+
+\item{taxon_list}{list of taxons to be downloaded (either a csv file or a vector with the names)}
+
+\item{rm_dupl}{If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)}
+
+\item{cols2keep}{Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),}
+
 \item{out_name}{Name to the output data set (csv file)}
+
+\item{...}{Other parameters to be passed mostly to 'occ_download()'. Not used}
 }
 \value{
-The sum of \code{gbif_usr} and \code{gbif_pwrd} and \code{email} and \code{credentials} and \code{out_name}
+A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 }
 \description{
-Download species occurrences from GBIF (Global Biodiversity Information Facility ), and saves them as a csv data set. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
+Download species occurrences from GBIF (Global Biodiversity Information Facility ), and generates a csv data set with the coordinates ready to be used. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it extracts and saves the coordinates of the occurrences in a csv file.
 }
 \details{
-The aim of this script is to define the function GetBIF(), which is used to download species occurrences from GBIF (Global Biodiversity Information Facility ), and saves them as a csv data set. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
+Downloading species ocurrence data (presences) from GBIF
+
+The aim of this script is to define the function GetBIF(), which is used to download species occurrences from GBIF (Global Biodiversity Information Facility ), and generate a csv data set with the coordinates ready to use. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
+}
+\examples{
+\donttest{
+GetBIF(credentials = "~/gbif_credentials.RData",
+       taxon_list = "list_taxons.csv",
+       out_name = "sp_records")
+}
+
+
+
 }
 \author{
 Xavier Rotllan-Puig

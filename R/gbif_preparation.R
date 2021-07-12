@@ -19,9 +19,11 @@
 #' @export
 #' @examples
 #' \donttest{
-#' GetBIF(credentia
-#'        taxon_lis
-#'        out_name)
+#' Prep_BIF(taxon_dir = NULL,
+#'          taxons = NULL,
+#'          cols2keep = NULL,
+#'          rm_dupl = NULL
+#'          )
 #'}
 #'
 #
@@ -30,7 +32,8 @@
 
 Prep_BIF <- function(taxon_dir = NULL,
                      taxons = NULL,
-                     cols2keep = NULL
+                     cols2keep = NULL,
+                     rm_dupl = NULL
                      ){
 
   data1 <- data.frame()
