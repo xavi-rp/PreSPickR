@@ -10,6 +10,7 @@
 #'
 #' @author Xavier Rotllan-Puig
 #' @description Download species (presences) data from the Bioatles http://bioatles.caib.es. As data in Bioatles is projected in European Datum 1950 (31N), the function also trensform it in Lat/Long Geographic Coordinates System WGS84. bioatles() is based on several functions included in the packages "rvest" (Wickham, 2016) and "xml2" (Wickham et al., 2017). Finally, it saves the data in a csv file.
+#' @import dplyr raster rgdal rvest sp xml2
 #' @param sp_dir Directory of the species list
 #' @param sp_list A csv file name or a vector containing species to be downloaded
 #' @param out_name Name to the output data set (csv file)

@@ -5,9 +5,15 @@
 \alias{GetBIF}
 \title{Downloading species ocurrence data (presences) from GBIF}
 \usage{
-GetBIF(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
-  credentials = NULL, sp_dir = NULL, sp_list = NULL,
-  out_name = "sp_records")
+GetBIF(
+  gbif_usr = NULL,
+  gbif_pwrd = NULL,
+  email = NULL,
+  credentials = NULL,
+  sp_dir = NULL,
+  sp_list = NULL,
+  out_name = "sp_records"
+)
 }
 \arguments{
 \item{gbif_usr}{User name in GBIF}
@@ -21,7 +27,7 @@ GetBIF(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
 \item{out_name}{Name to the output data set (csv file)}
 }
 \value{
-The sum of \code{gbif_usr} and \code{gbif_pwrd} and \code{email} and \code{credentials} and \code{out_name}
+An csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 }
 \description{
 Download species occurrences from GBIF (Global Biodiversity Information Facility ), and saves them as a csv data set. It is based on several functions included in the package "rgbif" (Chamberlain, 2017). GetBIF() retrieve your GBIF credentials (user and password) and automatically checks in a loop until the request of data made to GBIF is ready and starts the download. Finally, it saves the data in a csv file.
