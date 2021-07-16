@@ -13,7 +13,7 @@
 #' @description Retrieving the data set(s) downloaded with GetBIG() and creating a simpler data set (csv) with only those fields decided by the user. This function is used by GetBIF()
 #' @import rgbif dplyr
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set
-#' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
+#' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"). cols2keep = "all", keeps all columns
 #' @return A data frame
 #' @name PrepBIF()
 #' @export
@@ -21,7 +21,7 @@
 #' \donttest{
 #' Prep_BIF(taxon_dir = NULL,
 #'          taxons = NULL,
-#'          cols2keep = NULL,
+#'          cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #'          rm_dupl = NULL
 #'          )
 #'}
@@ -32,11 +32,12 @@
 
 Prep_BIF <- function(taxon_dir = NULL,
                      taxons = NULL,
-                     cols2keep = NULL,
+                     cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
                      rm_dupl = NULL
                      ){
 
-  data1 <- data.frame()
+  #data1 <- data.frame()
+  data1 <- data.table()
 
   for (sps in taxons){
     cat(paste0("Reading data for ", sps), "\n")
@@ -44,17 +45,21 @@ Prep_BIF <- function(taxon_dir = NULL,
 
     # Reading in data
     data02 <- occ_download_import(dta)
-    data02 <- data02[, names(data02) %in% cols2keep]
+    if(cols2keep != "all") data02 <- data02[, names(data02) %in% cols2keep]
 
     data1 <- rbind(data1, data02)
   }
 
-  data1 <- as.data.frame(data1)  #data set with coordinates and name of species
+  #data1 <- as.data.frame(data1)  #data set with coordinates and name of species
   if(rm_dupl == TRUE)  data1 <- data1[!duplicated(data1), ]
 
-  data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
-                             substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
-                             sep = "_"))
+  #data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
+  #                           substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
+  #                           sep = "_"))
+
+  data1[, sp2 := tolower(paste(substr(data1$species, 1, 3),
+                               substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
+                               sep = "_"))]
 
   return(data1)
 

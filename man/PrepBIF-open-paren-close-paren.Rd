@@ -5,10 +5,15 @@
 \alias{Prep_BIF}
 \title{GetBIF}
 \usage{
-Prep_BIF(taxon_dir = NULL, taxons = NULL, cols2keep = NULL, rm_dupl = NULL)
+Prep_BIF(
+  taxon_dir = NULL,
+  taxons = NULL,
+  cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
+  rm_dupl = NULL
+)
 }
 \arguments{
-\item{cols2keep}{Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),}
+\item{cols2keep}{Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"). cols2keep = "all", keeps all columns}
 
 \item{rm_dupl}{If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set}
 }
@@ -25,7 +30,7 @@ Preparing the species ocurrences data set from GBIF to be saved as a simpler csv
 \donttest{
 Prep_BIF(taxon_dir = NULL,
          taxons = NULL,
-         cols2keep = NULL,
+         cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
          rm_dupl = NULL
          )
 }
