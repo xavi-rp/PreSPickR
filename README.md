@@ -17,6 +17,18 @@ install_github("xavi-rp/PreSPickR")
 ```
 
 
+In case you want to install v.2 (under development):
+
+```
+library(devtools)
+install_github("xavi-rp/PreSPickR",
+               ref = "v2",
+               INSTALL_opts = c("--no-multiarch")  # https://github.com/rstudio/renv/issues/162
+               )
+
+```
+
+
 ## References
 
   - Scott Chamberlain (2017). rgbif: Interface to the Global 'Biodiversity' Information Facility 'API'. R package version 0.9.8. https://CRAN.R-project.org/package=rgbif
