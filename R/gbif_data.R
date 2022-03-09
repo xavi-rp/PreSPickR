@@ -172,4 +172,6 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   print(paste0("Saving GBIF data as ", out_name, ".csv"))
   write.csv(data1, paste0(out_name, ".csv"),
             quote = FALSE, row.names = FALSE)
+
+  return(data1)
 }

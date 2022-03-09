@@ -43,7 +43,7 @@ Prep_BIF <- function(taxon_dir = NULL,
     load(paste0(taxon_dir, "/download_info_", sps, ".RData"), verbose = FALSE)
 
     # Reading in data
-    data02 <- occ_download_import(dta)
+    data02 <- occ_download_import(dta, quote = "")
     if(cols2keep[1] != "all") data02 <- data02[, names(data02) %in% cols2keep]
 
     data1 <- rbind(data1, data02)
