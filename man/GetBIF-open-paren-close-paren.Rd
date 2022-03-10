@@ -13,9 +13,9 @@ GetBIF(
   taxon_dir = NULL,
   taxon_list = NULL,
   download_format = "SIMPLE_CSV",
-  download_years = c(2000, 2021),
+  download_years = c(NA, NA),
   download_coords = c(NA, NA, NA, NA),
-  download_coords_accuracy = c(0, 50),
+  download_coords_accuracy = c(NA, NA),
   rm_dupl = TRUE,
   cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
   out_name = "sp_records",
@@ -27,13 +27,21 @@ GetBIF(
 
 \item{gbif_pwrd}{Password in GBIF}
 
-\item{email}{email in GBIF}
+\item{email}{Email in GBIF}
 
 \item{credentials}{.RData file containing a list with gbif_usr, gbif_pwrd and email}
 
-\item{taxon_dir}{directory where to find the taxons list to be downloaded (only if not the working directory)}
+\item{taxon_dir}{Directory where to find the taxons list to be downloaded (only if not the working directory)}
 
-\item{taxon_list}{list of taxons to be downloaded (either a csv file or a vector with the names)}
+\item{taxon_list}{List of taxons to be downloaded (either a csv file or a vector with the names)}
+
+\item{download_format}{Default "SIMPLE_CSV"}
+
+\item{download_years}{Period to be downloaded. If c(NA, NA), the default, all years available}
+
+\item{download_coords}{Location (xmin, xmax, ymin, ymax). If c(NA, NA, NA, NA), the default, global download}
+
+\item{download_coords_accuracy}{Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF}
 
 \item{rm_dupl}{If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)}
 

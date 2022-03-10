@@ -17,10 +17,14 @@
 #' @import rgbif dplyr
 #' @param gbif_usr User name in GBIF
 #' @param gbif_pwrd Password in GBIF
-#' @param email email in GBIF
+#' @param email Email in GBIF
 #' @param credentials .RData file containing a list with gbif_usr, gbif_pwrd and email
-#' @param taxon_dir directory where to find the taxons list to be downloaded (only if not the working directory)
-#' @param taxon_list list of taxons to be downloaded (either a csv file or a vector with the names)
+#' @param taxon_dir Directory where to find the taxons list to be downloaded (only if not the working directory)
+#' @param taxon_list List of taxons to be downloaded (either a csv file or a vector with the names)
+#' @param download_format Default "SIMPLE_CSV"
+#' @param download_years Period to be downloaded. If c(NA, NA), the default, all years available
+#' @param download_coords Location (xmin, xmax, ymin, ymax). If c(NA, NA, NA, NA), the default, global download
+#' @param download_coords_accuracy Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
@@ -68,9 +72,11 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    credentials = NULL,
                    taxon_dir = NULL, taxon_list = NULL,
                    download_format = "SIMPLE_CSV",
-                   download_years = c(2000, 2021),
+                   #download_years = c(2000, 2021),
+                   download_years = c(NA, NA),
                    download_coords = c(NA, NA, NA, NA), #order: xmin, xmax, ymin, ymax
-                   download_coords_accuracy = c(0, 50),
+                   #download_coords_accuracy = c(0, 50),
+                   download_coords_accuracy = c(NA, NA),
                    rm_dupl = TRUE,
                    cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
                    out_name = "sp_records",
@@ -119,6 +125,30 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
     stop("please provide correct coordinates")
   }
 
+
+  if (sum(is.na(download_years)) == 2){
+    download_years <- c(0, as.vector(format(Sys.Date(), "%Y")))
+  }else if (sum(is.na(download_years)) > 0 & sum(is.na(download_years)) < 2){
+    stop("please provide correct years")
+  }else if (all(download_years >= 0 & download_years <= as.vector(format(Sys.Date(), "%Y")))){
+    years <- download_years
+  }else{
+    stop("please provide correct years")
+  }
+
+
+  if (sum(is.na(download_coords_accuracy)) == 2){
+    cord_unc <- pred_not(pred("coordinateUncertaintyInMeters", 0))
+  }else if (sum(is.na(download_coords_accuracy)) > 0 & sum(is.na(download_coords_accuracy)) < 2){
+    stop("please provide correct download_coords_accuracy (i.e. coordinateUncertaintyInMeters)")
+  }else if (any(download_coords_accuracy != 0)){
+    cord_unc <- pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
+  }else{
+    stop("please provide correct download_coords_accuracy (if c(0, 0), nothing downloaded from GBIF)")
+  }
+
+
+
   #### Downloading Data ####
   ## Spin up a download request for SEVERAL taxons data
 
@@ -127,10 +157,11 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
     rqst_02 <- occ_download(pred("taxonKey", name_backbone(name = sps)$usageKey),
                             format = download_format,
                             pred("hasCoordinate", TRUE),
-                            pred_and(pred_gte("year", download_years[1]), pred_lte("year", download_years[2])),
+                            pred_and(pred_gte("year", years[1]), pred_lte("year", years[2])),
                             pred_within(coords),
                             #pred_and(pred_gte("elevation", dts$elevation[1]), pred_lte("elevation", dts$elevation[2])),
-                            pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2])),
+                            #pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2])),
+                            cord_unc,
                             ...,
                             user = gbif_usr, pwd = gbif_pwrd, email = email)    #prepares the spin up
     # Creates metadata
