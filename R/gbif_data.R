@@ -24,7 +24,7 @@
 #' @param download_format Default "SIMPLE_CSV"
 #' @param download_years Period to be downloaded. If c(NA, NA), the default, all years available
 #' @param download_coords Location (xmin, xmax, ymin, ymax). If c(NA, NA, NA, NA), the default, global download
-#' @param download_coords_accuracy Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF. If, e.g., c(0, 50), will download those occs with not reported uncertainty plus those with uncertainty < 50m
+#' @param download_coords_accuracy Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF. If, e.g., c(0, 50), will download those occs with not reported uncertainty plus those with uncertainty <= 50m
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
@@ -144,7 +144,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   }else if (all(download_coords_accuracy != 0)){ # c(20, 50)
     cord_unc <- pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
   }else if (any(download_coords_accuracy != 0)){ # c(0, 50) allows not reported uncert
-    cord_unc <- pred_or(pred_not(pred("coordinateUncertaintyInMeters", 0)), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
+    cord_unc <- pred_or(pred_not(pred_notnull("coordinateUncertaintyInMeters")), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
   }else{
     stop("please provide correct download_coords_accuracy (if c(0, 0), nothing downloaded from GBIF)")
   }
