@@ -144,7 +144,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
   }else if (all(download_coords_accuracy != 0)){ # c(20, 50)
     cord_unc <- pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
   }else if (any(download_coords_accuracy != 0)){ # c(0, 50) allows not reported uncert
-    cord_unc <- pred_and(pred_not(pred("coordinateUncertaintyInMeters", 0)), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
+    cord_unc <- pred_or(pred_not(pred("coordinateUncertaintyInMeters", 0)), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2]))
   }else{
     stop("please provide correct download_coords_accuracy (if c(0, 0), nothing downloaded from GBIF)")
   }
