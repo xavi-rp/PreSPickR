@@ -41,7 +41,7 @@ GetBIF(
 
 \item{download_coords}{Location (xmin, xmax, ymin, ymax). If c(NA, NA, NA, NA), the default, global download}
 
-\item{download_coords_accuracy}{Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF. If, e.g., c(0, 50), will download those occs with not reported uncertainty plus those with uncertainty < 50m}
+\item{download_coords_accuracy}{Range of allowed uncertainty in the coordinates. If c(NA, NA), the default, all uncertainties allowed, even if no uncertainty is reported in GBIF. If, e.g., c(0, 50), will download those occs with not reported uncertainty plus those with uncertainty <= 50m}
 
 \item{rm_dupl}{If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)}
 
