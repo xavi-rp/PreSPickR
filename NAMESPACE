@@ -2,6 +2,5 @@
 
 export(GetBIF)
 export(Prep_BIF)
-import(data.table)
 import(dplyr)
 import(rgbif)

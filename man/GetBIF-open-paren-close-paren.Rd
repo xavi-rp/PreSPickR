@@ -18,8 +18,7 @@ GetBIF(
   download_coords_accuracy = c(NA, NA),
   rm_dupl = TRUE,
   cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
-  out_name = "sp_records",
-  ...
+  out_name = "sp_records"
 )
 }
 \arguments{

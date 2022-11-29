@@ -11,7 +11,7 @@
 #' @author Xavier Rotllan-Puig
 #' @title GetBIF
 #' @description Retrieving the data set(s) downloaded with GetBIG() and creating a simpler data set (csv) with only those fields decided by the user. This function is used by GetBIF()
-#' @import rgbif dplyr data.table
+#' @import rgbif dplyr
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"). cols2keep = "all", keeps all columns
 #' @return A data frame
@@ -49,16 +49,17 @@ Prep_BIF <- function(taxon_dir = NULL,
     data1 <- rbind(data1, data02)
   }
 
-  data1 <- as.data.table(data1)  #data set with coordinates and name of species
-  if(rm_dupl == TRUE)  data1 <- data1[!duplicated(data1), ]
+  #data1 <- as.data.table(data1)  #data set with coordinates and name of species
+  data1 <- as.data.frame(data1)  #data set with coordinates and name of species
+  if(rm_dupl == TRUE) data1 <- data1[!duplicated(data1), ]
 
   #data1$sp2 <- tolower(paste(substr(data1$species, 1, 3),
   #                           substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
   #                           sep = "_"))
 
-  data1[, sp2 := tolower(paste(substr(data1$species, 1, 3),
-                               substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
-                               sep = "_"))]
+  #data1[, sp2 := tolower(paste(substr(data1$species, 1, 3),
+  #                             substr(sub("^\\S+\\s+", '', data1$species), 1, 3),
+  #                             sep = "_"))]
 
   return(data1)
 
