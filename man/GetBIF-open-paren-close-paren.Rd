@@ -18,7 +18,8 @@ GetBIF(
   download_coords_accuracy = c(NA, NA),
   rm_dupl = TRUE,
   cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
-  out_name = "sp_records"
+  out_name = "sp_records",
+  ...
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ GetBIF(
 \item{cols2keep}{Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),}
 
 \item{out_name}{Name to the output data set (csv file)}
+
+\item{...}{Other parameters to be passed mostly to 'occ_download()'. Not used}
 }
 \value{
 A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.

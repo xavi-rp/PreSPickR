@@ -28,6 +28,7 @@
 #' @param rm_dupl If TRUE (default), duplicate occurrences (same sp, same coordinates) are removed from the final data set (csv file)
 #' @param cols2keep Column names to keep in the final data set. Default, cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
 #' @param out_name Name to the output data set (csv file)
+#' @param ... Other parameters to be passed mostly to 'occ_download()'. Not used
 #' @return A csv file with the occurrences in Lat/Long Geographic Coordinates System WGS84.
 #' @name GetBIF()
 #' @export
@@ -78,7 +79,8 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                    download_coords_accuracy = c(NA, NA),
                    rm_dupl = TRUE,
                    cols2keep = c("species", "decimalLatitude", "decimalLongitude"),
-                   out_name = "sp_records"
+                   out_name = "sp_records",
+                   ...
                    ){
 
   #### Settings ####
@@ -162,6 +164,7 @@ GetBIF <- function(gbif_usr = NULL, gbif_pwrd = NULL, email = NULL,
                             #pred_and(pred_gte("elevation", dts$elevation[1]), pred_lte("elevation", dts$elevation[2])),
                             #pred_and(pred_gte("coordinateUncertaintyInMeters", download_coords_accuracy[1]), pred_lte("coordinateUncertaintyInMeters", download_coords_accuracy[2])),
                             cord_unc,
+                            ...,
                             user = gbif_usr, pwd = gbif_pwrd, email = email)    #prepares the spin up
     # Creates metadata
     rqst_02_meta <- data.frame(status = "INITIAL")
